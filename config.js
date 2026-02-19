@@ -47,10 +47,27 @@ window.OZ_FREIGHT_CONFIG = {
   },
 
   pricing: {
-    securityMinimum: {
-      enabledLocations: ["high","low"],
-      maxJumps: 10,
-      minReward: 15_000_000,
+    /**
+     * Security Top-Up (smooth base price fade-out)
+     * Applies to small routes to avoid underpaying "micro contracts".
+     *
+     * Formula (High/Low only):
+     *   P      = ratePerJump * jumps
+     *   factor = 1 - min(jumps, N) / N
+     *   TopUp  = BaseBySize[size] * factor
+     *   Reward = roundUp(P + TopUp, roundingStep)
+     *
+     * At jumps >= N, TopUp becomes 0 (pricing becomes pure per-jump).
+     */
+    securityTopUp: {
+      enabledLocations: ["high", "low"],
+      fadeOutJumps: 15, // N
+      baseBySize: {
+        s13:  15_000_000,
+        s60:  20_000_000,
+        s900: 20_000_000,
+      },
+      roundingStep: 100_000, // PushX-style: round up to 100k
     },
 
     perJump: {
@@ -78,7 +95,7 @@ window.OZ_FREIGHT_CONFIG = {
 
   warnings: {
     high:
-      "We accept public player-owned structures, but we reserve the right to refuse a contract if a structure is not considered trustworthy. You will receive an in‑game mail explaining the reason.",
+      "We accept public player-owned structures, but we reserve the right to refuse a contract if a structure is not considered trustworthy. You will receive an in-game mail explaining the reason.",
     low:
       "Player-owned structures are NOT permitted under the Low-sec service. Only NPC stations are accepted. Rush speed is not available for safety reasons.",
     pochven:
