@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0b0d12" />
+    <title>OZ Freight: Calculator</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Orbitron:wght@500;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <noscript>
+        <div class="noscript">
+            This page needs JavaScript enabled to run the calculator.
+        </div>
+    </noscript>
+
+    <main class="container">
+        <header class="site-header">
+            <div class="brand">
+                <h1 class="title">OZ Freight: Calculator</h1>
+                <p class="subtitle">Security of the elite. Accessibility for all.</p>
+            </div>
+
+            <section class="card status-card" aria-label="Service status">
+                <div class="status-label">Service status</div>
+                <div class="status-row">
+                    <span class="status-dot" id="statusDot" aria-hidden="true"></span>
+                    <span class="status-text" id="statusText">Active - Normal operations</span>
+                </div>
+                <!-- <div class="status-hint muted">
+                    Edit <span class="mono">config.js</span> to change this quickly (vacation mode, downtime, etc.).
+                </div> -->
+            </section>
+        </header>
+
+        <section class="card controls" aria-label="Service options">
+            <div class="control-block">
+                <div class="control-title">Location</div>
+                <div class="segmented" data-group="location" role="radiogroup" aria-label="Location">
+                    <button class="seg-btn is-active" data-value="high" role="radio"
+                        aria-checked="true">High-sec</button>
+                    <button class="seg-btn" data-value="low" role="radio" aria-checked="false">Low-sec</button>
+                    <button class="seg-btn" data-value="thera" role="radio" aria-checked="false">Thera</button>
+                    <button class="seg-btn" data-value="pochven" role="radio" aria-checked="false">Pochven</button>
+                </div>
+            </div>
+
+            <div class="control-block">
+                <div class="control-title">Service size</div>
+                <div class="segmented" data-group="size" role="radiogroup" aria-label="Service size">
+                    <button class="seg-btn" data-value="s13" role="radio" aria-checked="false">13,000 m³</button>
+                    <button class="seg-btn is-active" data-value="s60" role="radio" aria-checked="true">60,000
+                        m³</button>
+                    <button class="seg-btn" data-value="s900" role="radio" aria-checked="false">900,000 m³</button>
+                </div>
+            </div>
+
+            <div class="control-block">
+                <div class="control-title">Speed</div>
+                <div class="segmented" data-group="speed" role="radiogroup" aria-label="Speed">
+                    <button class="seg-btn is-active" data-value="normal" role="radio" aria-checked="true">Normal
+                        Speed</button>
+                    <button class="seg-btn" data-value="rush" role="radio" aria-checked="false">Rush Speed</button>
+                </div>
+                <div class="hint" id="speedHint" aria-live="polite"></div>
+            </div>
+        </section>
+
+        <section class="grid">
+            <section class="card" aria-labelledby="reqTitle">
+                <div class="card-header">
+                    <h2 id="reqTitle">Requirements</h2>
+                    <span class="chip" id="accentChip">High-sec</span>
+                </div>
+
+                <dl class="req-grid">
+                    <div class="req-item">
+                        <dt>Contract to</dt>
+                        <dd class="dd-row">
+                            <span id="reqContractTo">OZ Freight</span>
+                            <button class="copy-mini" id="copyContractTo" type="button"
+                                title="Copy to clipboard">COPY</button>
+                        </dd>
+                    </div>
+
+                    <div class="req-item">
+                        <dt>Max volume</dt>
+                        <dd id="reqVolume">60,000 m³</dd>
+                    </div>
+
+                    <div class="req-item">
+                        <dt>Time to accept</dt>
+                        <dd id="reqAccept">3 Days</dd>
+                    </div>
+
+                    <div class="req-item">
+                        <dt>Collateral max</dt>
+                        <dd class="dd-row">
+                            <span id="reqCollateral">5 000 000 000 ISK</span>
+                            <button class="copy-mini" id="copyCollateral" type="button"
+                                title="Copy to clipboard">COPY</button>
+                        </dd>
+                    </div>
+
+                    <div class="req-item">
+                        <dt>Time to complete</dt>
+                        <dd id="reqComplete">3 Days</dd>
+                    </div>
+                </dl>
+
+
+                <div class="divider"></div>
+                <div class="smallprint" id="reqFootnote">
+                    Values update automatically based on the selected service.
+                </div>
+            </section>
+
+            <section class="card" aria-labelledby="warnTitle">
+                <div class="card-header">
+                    <h2 id="warnTitle">Warning</h2>
+                </div>
+                <p class="warning-text" id="warningText"></p>
+            </section>
+        </section>
+
+        <section class="card calculator accented" aria-labelledby="calcTitle">
+            <div class="card-header">
+                <h2 id="calcTitle">Calculator</h2>
+                <div class="calc-meta" id="calcMeta"></div>
+            </div>
+
+            <div class="calc-grid">
+                <div class="field" id="routeField">
+                    <label class="field-label" for="routeInput" id="routeLabel">Number of jumps</label>
+
+                    <div class="field-control">
+                        <input id="routeInput" class="field-input" type="number" inputmode="numeric" min="1" step="1"
+                            placeholder="Enter jumps (e.g. 14)" autocomplete="off" />
+
+                        <a class="field-addon" id="dotlanLink" href="#" target="_blank" rel="noopener noreferrer"
+                            title="Open DOTLAN route planner">
+                            DOTLAN
+                        </a>
+                    </div>
+
+                    <div class="field-help" id="routeHelp"></div>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="rewardOutput">Reward</label>
+
+                    <div class="field-control">
+                        <input id="rewardOutput" class="field-input" type="text" value="—" readonly />
+                        <button class="field-addon button-like" id="copyReward" type="button"
+                            title="Copy reward to clipboard">
+                            COPY
+                        </button>
+                    </div>
+
+                    <div class="field-help" id="rewardHelp"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card contact-card" aria-labelledby="contactTitle">
+            <div class="card-header">
+                <h2 id="contactTitle">Contact</h2>
+            </div>
+
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <div class="contact-label">In-game</div>
+                    <div class="contact-value">Julian Ozone</div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-label">Discord</div>
+                    <div class="contact-value">
+                        <!-- Placeholder link: replace href yourself -->
+                        <a class="contact-link" id="discordLink" href="#" target="_blank" rel="noopener noreferrer">
+                            Official OZ Freight Discord
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="site-footer">
+            <div class="muted">
+                OZ Freight calculator — for in-game contract planning.
+            </div>
+        </footer>
+    </main>
+
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
