@@ -74,6 +74,13 @@
     return `${nf.format(n)} m³`;
   }
 
+  function roundUpToStep(value, step) {
+    const v = Number(value);
+    const s = Number(step);
+    if (!Number.isFinite(v) || !Number.isFinite(s) || s <= 0) return value;
+    return Math.ceil(v / s) * s;
+  }
+
   async function copyText(text) {
     // Prefer modern clipboard API
     try {
@@ -257,6 +264,8 @@
     const size = state.size;
     const speed = state.speed;
 
+    const topUpCfg = config.pricing.securityTopUp;
+
     // Fixed-rate locations (Thera / Pochven)
     const fixedLoc = config.pricing.fixed[loc];
     if (fixedLoc) {
@@ -264,7 +273,10 @@
       if (typeof fixed !== "number") {
         return { reward: null, reason: "Not available for this selection." };
       }
-      return { reward: fixed };
+
+      // Keep output clean with the same rounding step if configured (optional)
+      const step = topUpCfg?.roundingStep || 100_000;
+      return { reward: roundUpToStep(fixed, step) };
     }
 
     // Per-jump locations (High / Low)
@@ -278,13 +290,25 @@
       return { reward: null, reason: "Enter a valid jump count." };
     }
 
+    // Base per-jump price
     let reward = perJumpRate * jumps;
 
-    // Security minimum (applied silently)
-    const minCfg = config.pricing.securityMinimum;
-    const minEnabled = (minCfg.enabledLocations || []).includes(loc);
-    if (minEnabled && jumps <= minCfg.maxJumps) {
-      reward = Math.max(reward, minCfg.minReward);
+    // Smooth "security top-up" (High/Low only)
+    const enabled = (topUpCfg?.enabledLocations || []).includes(loc);
+    if (enabled) {
+      const N = Number(topUpCfg.fadeOutJumps || 0);
+      const base = Number(topUpCfg.baseBySize?.[size] || 0);
+
+      if (Number.isFinite(N) && N > 0 && Number.isFinite(base) && base > 0) {
+        const j = Math.min(jumps, N);
+        const factor = 1 - (j / N); // linear fade-out
+        const topUp = base * factor;
+        reward = reward + topUp;
+      }
+
+      // Always apply rounding for High/Low (PushX style)
+      const step = Number(topUpCfg.roundingStep || 100_000);
+      reward = roundUpToStep(reward, step);
     }
 
     return { reward };
