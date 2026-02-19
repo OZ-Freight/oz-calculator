@@ -120,10 +120,12 @@
   // ---- UI updates ----
   function applyServiceStatus() {
     const s = config.serviceStatus || {};
-    el.statusText.textContent = s.text || "Active - Normal operations";
-    el.statusDot.style.background = s.dotColor || "#39ff88";
-    el.statusDot.style.boxShadow =
-      `0 0 0 3px ${hexToRgba(s.dotColor || "#39ff88", 0.18)}, 0 0 22px ${hexToRgba(s.dotColor || "#39ff88", 0.25)}`;
+    if (el.statusText) el.statusText.textContent = s.text || "Active - Normal operations";
+    if (el.statusDot) {
+      el.statusDot.style.background = s.dotColor || "#39ff88";
+      el.statusDot.style.boxShadow =
+        `0 0 0 3px ${hexToRgba(s.dotColor || "#39ff88", 0.18)}, 0 0 22px ${hexToRgba(s.dotColor || "#39ff88", 0.25)}`;
+    }
   }
 
   function setAccentByLocation() {
@@ -133,7 +135,7 @@
     document.documentElement.style.setProperty("--accent", accent);
     document.documentElement.style.setProperty("--accent-soft", hexToRgba(accent, 0.18));
 
-    el.accentChip.textContent = loc?.label || state.location;
+    if (el.accentChip) el.accentChip.textContent = loc?.label || state.location;
   }
 
   function updateSegmentedButtons() {
@@ -165,96 +167,111 @@
     });
 
     const speedSeg = document.querySelector('.segmented[data-group="speed"]');
-    speedSeg.querySelectorAll(".seg-btn").forEach((btn) => {
-      const val = btn.dataset.value;
-      const ok = allowedSpeeds.includes(val);
-      btn.disabled = !ok;
+    if (speedSeg) {
+      speedSeg.querySelectorAll(".seg-btn").forEach((btn) => {
+        const val = btn.dataset.value;
+        const ok = allowedSpeeds.includes(val);
+        btn.disabled = !ok;
 
-      if (!ok && (state.location === "low" || state.location === "pochven") && val === "rush") {
-        btn.title = "Rush speed is not available here for safety reasons";
+        if (!ok && (state.location === "low" || state.location === "pochven") && val === "rush") {
+          btn.title = "Rush speed is not available here for safety reasons";
+        } else {
+          btn.title = ok ? "" : "Not available for this location";
+        }
+      });
+    }
+
+    if (el.speedHint) {
+      if (state.location === "low" || state.location === "pochven") {
+        el.speedHint.textContent = "Rush speed is disabled for safety reasons in this location.";
       } else {
-        btn.title = ok ? "" : "Not available for this location";
+        el.speedHint.textContent = "";
       }
-    });
-
-    if (state.location === "low" || state.location === "pochven") {
-      el.speedHint.textContent = "Rush speed is disabled for safety reasons in this location.";
-    } else {
-      el.speedHint.textContent = "";
     }
   }
 
   function updateRequirements() {
-    el.reqContractTo.textContent = config.brand.corpName || "OZ Freight";
+    if (el.reqContractTo) el.reqContractTo.textContent = config.brand.corpName || "OZ Freight";
 
     const speedCfg = config.speedModes[state.speed];
-    el.reqAccept.textContent = `${speedCfg.tAcceptDays} ${plural(speedCfg.tAcceptDays, "Day", "Days")}`;
-    el.reqComplete.textContent = `${speedCfg.tCompleteDays} ${plural(speedCfg.tCompleteDays, "Day", "Days")}`;
+    if (el.reqAccept) {
+      el.reqAccept.textContent = `${speedCfg.tAcceptDays} ${plural(speedCfg.tAcceptDays, "Day", "Days")}`;
+    }
+    if (el.reqComplete) {
+      el.reqComplete.textContent = `${speedCfg.tCompleteDays} ${plural(speedCfg.tCompleteDays, "Day", "Days")}`;
+    }
 
     const sizeCfg = config.serviceSizes[state.size];
-    el.reqVolume.textContent = fmtVolume(sizeCfg.volume);
-    el.reqCollateral.textContent = fmtIskSpaces(sizeCfg.collateral);
+    if (el.reqVolume) el.reqVolume.textContent = fmtVolume(sizeCfg.volume);
+    if (el.reqCollateral) el.reqCollateral.textContent = fmtIskSpaces(sizeCfg.collateral);
 
     const locLabel = config.locations[state.location]?.label || state.location;
     const speedLabel = speedCfg.label;
     const sizeLabel = sizeCfg.label;
 
-    el.calcMeta.textContent = `${locLabel} • ${sizeLabel} • ${speedLabel}`;
-    el.reqFootnote.textContent = "Values update automatically based on the selected service.";
+    if (el.calcMeta) el.calcMeta.textContent = `${locLabel} • ${sizeLabel} • ${speedLabel}`;
+    if (el.reqFootnote) el.reqFootnote.textContent = "Values update automatically based on the selected service.";
   }
 
   function updateWarning() {
-    el.warningText.textContent = config.warnings[state.location] || "";
+    if (el.warningText) el.warningText.textContent = config.warnings[state.location] || "";
   }
 
   function updateRouteInputMode() {
     const loc = state.location;
 
-    // reset lock class
-    el.routeInput.classList.remove("is-locked");
+    if (el.routeInput) el.routeInput.classList.remove("is-locked");
 
     if (loc === "high" || loc === "low") {
-      el.routeLabel.textContent = "Number of jumps";
-      el.routeInput.type = "number";
-      el.routeInput.inputMode = "numeric";
-      el.routeInput.min = "1";
-      el.routeInput.step = "1";
-      el.routeInput.disabled = false;
-      el.routeInput.placeholder = "Enter jumps (e.g. 14)";
-      el.routeInput.value = state.jumps;
+      if (el.routeLabel) el.routeLabel.textContent = "Number of jumps";
+      if (el.routeInput) {
+        el.routeInput.type = "number";
+        el.routeInput.inputMode = "numeric";
+        el.routeInput.min = "1";
+        el.routeInput.step = "1";
+        el.routeInput.disabled = false;
+        el.routeInput.placeholder = "Enter jumps (e.g. 14)";
+        el.routeInput.value = state.jumps;
+      }
 
-      el.dotlanLink.hidden = false;
-      el.dotlanLink.href = config.externalLinks.dotlanRoutePlanner;
+      if (el.dotlanLink) {
+        el.dotlanLink.hidden = false;
+        el.dotlanLink.href = config.externalLinks.dotlanRoutePlanner;
+      }
 
-      el.routeHelp.textContent = "Need the jump count? Use DOTLAN route planner.";
+      if (el.routeHelp) el.routeHelp.textContent = "Need the jump count? Use DOTLAN route planner.";
       return;
     }
 
     // Thera: locked, fixed label
     if (loc === "thera") {
-      el.routeLabel.textContent = "Route";
-      el.routeInput.type = "text";
-      el.routeInput.disabled = true;
-      el.routeInput.value = "Thera (NPC Stations)";
-      el.routeInput.placeholder = "";
-      el.routeInput.classList.add("is-locked");
+      if (el.routeLabel) el.routeLabel.textContent = "Route";
+      if (el.routeInput) {
+        el.routeInput.type = "text";
+        el.routeInput.disabled = true;
+        el.routeInput.value = "Thera (NPC Stations)";
+        el.routeInput.placeholder = "";
+        el.routeInput.classList.add("is-locked");
+      }
 
-      el.dotlanLink.hidden = true;
-      el.routeHelp.textContent = "";
+      if (el.dotlanLink) el.dotlanLink.hidden = true;
+      if (el.routeHelp) el.routeHelp.textContent = "";
       return;
     }
 
     // Pochven: locked, fixed label
     if (loc === "pochven") {
-      el.routeLabel.textContent = "Route";
-      el.routeInput.type = "text";
-      el.routeInput.disabled = true;
-      el.routeInput.value = "Pochven (region)";
-      el.routeInput.placeholder = "";
-      el.routeInput.classList.add("is-locked");
+      if (el.routeLabel) el.routeLabel.textContent = "Route";
+      if (el.routeInput) {
+        el.routeInput.type = "text";
+        el.routeInput.disabled = true;
+        el.routeInput.value = "Pochven (region)";
+        el.routeInput.placeholder = "";
+        el.routeInput.classList.add("is-locked");
+      }
 
-      el.dotlanLink.hidden = true;
-      el.routeHelp.textContent = "";
+      if (el.dotlanLink) el.dotlanLink.hidden = true;
+      if (el.routeHelp) el.routeHelp.textContent = "";
       return;
     }
   }
@@ -318,15 +335,15 @@
     const res = computeReward();
 
     if (typeof res.reward === "number") {
-      el.rewardOutput.value = fmtIsk(res.reward);
-      el.rewardHelp.textContent = "";
-      el.copyReward.disabled = false;
+      if (el.rewardOutput) el.rewardOutput.value = fmtIsk(res.reward);
+      if (el.rewardHelp) el.rewardHelp.textContent = "";
+      if (el.copyReward) el.copyReward.disabled = false;
       return;
     }
 
-    el.rewardOutput.value = "—";
-    el.rewardHelp.textContent = res.reason || "";
-    el.copyReward.disabled = true;
+    if (el.rewardOutput) el.rewardOutput.value = "—";
+    if (el.rewardHelp) el.rewardHelp.textContent = res.reason || "";
+    if (el.copyReward) el.copyReward.disabled = true;
   }
 
   function renderAll() {
@@ -339,56 +356,79 @@
     updateRewardUI();
   }
 
-  // ---- Events ----
-  document.querySelectorAll(".segmented").forEach((seg) => {
-    seg.addEventListener("click", (evt) => {
-      const btn = evt.target.closest("button[data-value]");
-      if (!btn || btn.disabled) return;
+  function bindEvents() {
+    // Switches
+    document.querySelectorAll(".segmented").forEach((seg) => {
+      seg.addEventListener("click", (evt) => {
+        const btn = evt.target.closest("button[data-value]");
+        if (!btn || btn.disabled) return;
 
-      const group = seg.dataset.group;
-      state[group] = btn.dataset.value;
+        const group = seg.dataset.group;
+        state[group] = btn.dataset.value;
 
-      renderAll();
+        renderAll();
+      });
     });
-  });
 
-  el.routeInput.addEventListener("input", () => {
-    if (state.location === "high" || state.location === "low") {
-      state.jumps = el.routeInput.value;
+    // Jumps input
+    if (el.routeInput) {
+      el.routeInput.addEventListener("input", () => {
+        if (state.location === "high" || state.location === "low") {
+          state.jumps = el.routeInput.value;
+        }
+        updateRewardUI();
+      });
     }
-    updateRewardUI();
-  });
 
-  el.copyReward.addEventListener("click", async () => {
-    const text = el.rewardOutput.value;
-    if (!text || text === "—") return;
-    const ok = await copyText(text);
-    if (ok) flashCopied(el.copyReward);
-  });
+    // Copy reward
+    if (el.copyReward) {
+      el.copyReward.addEventListener("click", async () => {
+        const text = el.rewardOutput?.value;
+        if (!text || text === "—") return;
+        const ok = await copyText(text);
+        if (ok) flashCopied(el.copyReward);
+      });
+    }
 
-  el.copyContractTo.addEventListener("click", async () => {
-    const text = (el.reqContractTo.textContent || "").trim();
-    if (!text) return;
-    const ok = await copyText(text);
-    if (ok) flashCopied(el.copyContractTo);
-  });
+    // Copy contract to
+    if (el.copyContractTo) {
+      el.copyContractTo.addEventListener("click", async () => {
+        const text = (el.reqContractTo?.textContent || "").trim();
+        if (!text) return;
+        const ok = await copyText(text);
+        if (ok) flashCopied(el.copyContractTo);
+      });
+    }
 
-  el.copyCollateral.addEventListener("click", async () => {
-    const text = (el.reqCollateral.textContent || "").trim();
-    if (!text) return;
-    const ok = await copyText(text);
-    if (ok) flashCopied(el.copyCollateral);
-  });
+    // Copy collateral
+    if (el.copyCollateral) {
+      el.copyCollateral.addEventListener("click", async () => {
+        const text = (el.reqCollateral?.textContent || "").trim();
+        if (!text) return;
+        const ok = await copyText(text);
+        if (ok) flashCopied(el.copyCollateral);
+      });
+    }
 
-  // Prevent placeholder Discord link from jumping to top (until you set the real href)
-  if (el.discordLink) {
-    el.discordLink.addEventListener("click", (e) => {
-      const href = el.discordLink.getAttribute("href");
-      if (!href || href === "#") e.preventDefault();
-    });
+    // Prevent placeholder Discord link from jumping to top (until you set the real href)
+    if (el.discordLink) {
+      el.discordLink.addEventListener("click", (e) => {
+        const href = el.discordLink.getAttribute("href");
+        if (!href || href === "#") e.preventDefault();
+      });
+    }
   }
 
-  // ---- Init ----
-  applyServiceStatus();
-  renderAll();
+  function init() {
+    applyServiceStatus();
+    renderAll();   // <- IMPORTANT: render immediately so Warning/Meta show on first load
+    bindEvents();  // bind after render to avoid a binding error blocking initial UI
+  }
+
+  // Run init after DOM is ready (robust even if you move scripts later)
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
 })();
