@@ -22,7 +22,7 @@ window.OZ_FREIGHT_CONFIG = {
   serviceSizes: {
     s13:  { label: "13,000 m³",  volume: 13000,  collateral: 5_000_000_000 },
     s60:  { label: "60,000 m³",  volume: 60000,  collateral: 5_000_000_000 },
-    s900: { label: "800,000 m³", volume: 800000, collateral: 3_000_000_000 },
+    s800: { label: "800,000 m³", volume: 800000, collateral: 3_000_000_000 },
   },
 
   speedModes: {
@@ -108,4 +108,5 @@ window.OZ_FREIGHT_CONFIG = {
     dotlanRoutePlanner: "https://evemaps.dotlan.net/route",
   },
 };
+
 
