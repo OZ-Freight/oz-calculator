@@ -22,7 +22,7 @@ window.OZ_FREIGHT_CONFIG = {
   serviceSizes: {
     s13:  { label: "13,000 m³",  volume: 13000,  collateral: 5_000_000_000 },
     s60:  { label: "60,000 m³",  volume: 60000,  collateral: 5_000_000_000 },
-    s800: { label: "800,000 m³", volume: 800000, collateral: 3_000_000_000 },
+    s900: { label: "900,000 m³", volume: 900000, collateral: 3_500_000_000 },
   },
 
   speedModes: {
@@ -32,7 +32,7 @@ window.OZ_FREIGHT_CONFIG = {
 
   restrictions: {
     allowedSizes: {
-      high:   ["s13","s60","s800"],
+      high:   ["s13","s60","s900"],
       low:    ["s13"],
       thera:  ["s13","s60"],
       pochven:["s13","s60"],
@@ -65,14 +65,14 @@ window.OZ_FREIGHT_CONFIG = {
       baseBySize: {
         s13:  15_000_000,
         s60:  20_000_000,
-        s800: 20_000_000,
+        s900: 20_000_000,
       },
       roundingStep: 100_000, // PushX-style: round up to 100k
     },
 
     perJump: {
       high: {
-        s800: { normal: 1_800_000, rush: 2_800_000 },
+        s900: { normal: 1_800_000, rush: 2_800_000 },
         s60:  { normal: 1_500_000, rush: 2_500_000 },
         s13:  { normal: 1_200_000, rush: 2_200_000 },
       },
@@ -108,5 +108,6 @@ window.OZ_FREIGHT_CONFIG = {
     dotlanRoutePlanner: "https://evemaps.dotlan.net/route",
   },
 };
+
 
 
